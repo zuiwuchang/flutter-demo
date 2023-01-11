@@ -8,11 +8,11 @@
 tv
 設備無法觸屏通常也沒有鼠標鍵盤，唯一通用的控制方式是遙控器。通常不同的遙控器帶有很多按鍵，但額外的按鍵包含哪些是無法確認的故無法對它們進行有效的編程。
 
-能夠有效進行編程的按鍵只有6個，分別是遙控器的 上下左右 四個方案鍵，以及 確認鍵
-與 取消鍵。
+能夠有效進行編程的按鍵只有6個，分別是遙控器的 上下左右 四個方向鍵，以及 確認鍵
+和 取消鍵。
 
-所以通常我們應該使用 上下左右 四個按鍵來移動焦，然後通過 確認鍵 和 取消鍵
-來使用功能或取消功能。(複雜的功能可以將其放到不同的焦點 widget
+所以通常我們應該使用 上下左右 四個按鍵來移動焦點，然後通過 確認鍵 和 取消鍵
+來使用焦點組件提供的功能或取消功能。(複雜的功能可以將其放到不同的焦點 widget
 上，然後移動焦點來選取功能)。
 
 | 遙控器按鈕 | flutter logicalKey |
@@ -40,7 +40,7 @@ FocusableWidget 定義在 focusable.dart 中，它是本系統用於處理遙控
 只需要將 flutter 提供的原始 widget 作爲 child 給 FocusableWidget
 進行包裝，FocusableWidget 就會接管對焦點的處理以支持 tv
 
-FocusableWidget 提供來幾個可選的回調函數，提供設置它們可以修改對焦點的處理方案
+FocusableWidget 提供了幾個可選的回調函數，設置它們可以修改對焦點的處理方案
 
 ```
 final FocusOnKeyEventCallback? onKeyEvent;
@@ -51,10 +51,10 @@ final FocusableOnCancel? onCancel;
 
 - onKeyEvent 是最先被調用可以對最原始的鍵盤事件就行處理
 - onMove 是在解析到遙控器和鼠標 上下左右 按鍵被按下時的回調，通常在此移動焦點
-- onOK 是在遙控器 ok 或者 鍵盤 enter 被擡起時回調，通常在此調用 子組件的
-  提交功能例如 (GestureDetector.onTap 或 TextButton.onPressed)
-- onCancel 是在遙控器 cancel 或者 鍵盤 esc 被擡起時回調，通常在此 取消功能(例如
-  退出頁面 或者 關閉選單)
+- onOK 是在遙控器 ok 被擡起時回調，通常在此調用 子組件的 提交功能例如
+  (GestureDetector.onTap 或 TextButton.onPressed)
+- onCancel 是在遙控器 cancel 被擡起時回調，通常在此 取消功能(例如 退出頁面 或者
+  關閉選單)
 
 # example
 
