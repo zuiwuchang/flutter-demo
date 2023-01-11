@@ -12,6 +12,20 @@ typedef FocusableOnCancel = FocusableOnOK;
 typedef FocusBuilderCallback = Widget Function(
     BuildContext context, FocusNode focusNode);
 
+enum WhenKeyEvent {
+  /// 任何時候都不要處理
+  none,
+
+  /// 當按鍵按下時
+  down,
+
+  /// 當按鍵擡起時
+  up,
+
+  /// down or up
+  all,
+}
+
 class FocusableWidget extends StatefulWidget {
   const FocusableWidget({
     super.key,
@@ -19,8 +33,11 @@ class FocusableWidget extends StatefulWidget {
     this.focusNode,
     this.onKeyEvent,
     this.onMove,
+    this.whenMove = WhenKeyEvent.down,
     this.onOK,
+    this.whenOk = WhenKeyEvent.up,
     this.onCancel,
+    this.whenCancel = WhenKeyEvent.none,
   });
 
   /// 被包裝的 Widget
@@ -32,12 +49,16 @@ class FocusableWidget extends StatefulWidget {
 
   /// 可以攔截默認的 焦點移動 處理
   final FocusableOnMove? onMove;
+  final WhenKeyEvent whenMove;
 
   /// 可以攔截默認的 確認 處理
   final FocusableOnOK? onOK;
+  final WhenKeyEvent whenOk;
 
   /// 可以攔截默認的 取消 處理
   final FocusableOnCancel? onCancel;
+  final WhenKeyEvent whenCancel;
+
   @override
   createState() => _FocusableWidgetState();
 }
@@ -69,43 +90,47 @@ class _FocusableWidgetState extends State<FocusableWidget> {
       }
     }
 
-    if (event is KeyDownEvent) {
-      // tv 遙控器 移動 焦點
-      // 鍵盤 方向鍵
-      if (LogicalKeyboardKey.arrowLeft == event.logicalKey) {
-        return _moveArrow(focusNode, event, TraversalDirection.left);
-      } else if (LogicalKeyboardKey.arrowRight == event.logicalKey) {
-        return _moveArrow(focusNode, event, TraversalDirection.right);
-      } else if (LogicalKeyboardKey.arrowUp == event.logicalKey) {
-        return _moveArrow(focusNode, event, TraversalDirection.up);
-      } else if (LogicalKeyboardKey.arrowDown == event.logicalKey) {
-        return _moveArrow(focusNode, event, TraversalDirection.down);
-      }
-    } else if (event is KeyUpEvent) {
-      // tv 遙控器 select
-      // 鍵盤 enter
-      if (LogicalKeyboardKey.select == event.logicalKey ||
-          LogicalKeyboardKey.enter == event.logicalKey) {
-        final result = _ok(focusNode, event);
-        if (result != KeyEventResult.ignored) {
-          return result;
-        }
-      }
-      // tv 遙控器 cancel
-      // 鍵盤 esc
-      else if (LogicalKeyboardKey.cancel == event.logicalKey ||
-          LogicalKeyboardKey.escape == event.logicalKey) {
-        final result = _cancel(focusNode, event);
-        if (result != KeyEventResult.ignored) {
-          return result;
-        }
-      }
+    // tv 遙控器 移動 焦點
+    // 鍵盤 方向鍵
+    if (LogicalKeyboardKey.arrowLeft == event.logicalKey) {
+      return _moveArrow(focusNode, event, TraversalDirection.left);
+    } else if (LogicalKeyboardKey.arrowRight == event.logicalKey) {
+      return _moveArrow(focusNode, event, TraversalDirection.right);
+    } else if (LogicalKeyboardKey.arrowUp == event.logicalKey) {
+      return _moveArrow(focusNode, event, TraversalDirection.up);
+    } else if (LogicalKeyboardKey.arrowDown == event.logicalKey) {
+      return _moveArrow(focusNode, event, TraversalDirection.down);
+    }
+    // tv 遙控器 select
+    else if (LogicalKeyboardKey.select == event.logicalKey) {
+      return _ok(focusNode, event);
+    }
+    // tv 遙控器 cancel
+    else if (LogicalKeyboardKey.cancel == event.logicalKey) {
+      return _cancel(focusNode, event);
     }
     return KeyEventResult.ignored;
   }
 
   KeyEventResult _moveArrow(
       FocusNode node, KeyEvent event, TraversalDirection direction) {
+    switch (widget.whenMove) {
+      case WhenKeyEvent.down:
+        if (event is! KeyDownEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.up:
+        if (event is! KeyUpEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.all:
+        break;
+      default:
+        return KeyEventResult.ignored;
+    }
+
     if (widget.onMove != null) {
       final result = widget.onMove!(node, event, direction);
       if (result != KeyEventResult.ignored) {
@@ -117,49 +142,53 @@ class _FocusableWidgetState extends State<FocusableWidget> {
   }
 
   KeyEventResult _ok(FocusNode node, KeyEvent event) {
+    switch (widget.whenOk) {
+      case WhenKeyEvent.down:
+        if (event is! KeyDownEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.up:
+        if (event is! KeyUpEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.all:
+        break;
+      default:
+        return KeyEventResult.ignored;
+    }
+
     if (widget.onOK != null) {
       final result = widget.onOK!(node, event);
       if (result != KeyEventResult.ignored) {
         return result;
       }
     }
-
     if (node.context?.widget == null) {
       return KeyEventResult.ignored;
     }
-
-    VoidCallback? submit;
-    var w = node.context!.widget;
-    if (w is Focus) {
-      w = w.child;
-    }
-
-    /// 處理 系統提供的 常用 widget
-    if (w is ListTile) {
-      submit = w.onTap;
-    } else if (w is GestureDetector) {
-      submit = w.onTap;
-    } else if (w is InkResponse) {
-      submit = w.onTap;
-    } else if (w is ButtonStyleButton) {
-      // TextButton
-      submit = w.onPressed;
-    } else if (w is IconButton) {
-      submit = w.onPressed;
-    } else if (w is CloseButton) {
-      submit = w.onPressed;
-    } else if (w is BackButton) {
-      submit = w.onPressed;
-    } else {
-      return KeyEventResult.ignored;
-    }
-    if (submit != null) {
-      submit();
-    }
-    return KeyEventResult.handled;
+    return widgetSubmit(node.context!.widget);
   }
 
   KeyEventResult _cancel(FocusNode node, KeyEvent event) {
+    switch (widget.whenCancel) {
+      case WhenKeyEvent.down:
+        if (event is! KeyDownEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.up:
+        if (event is! KeyUpEvent) {
+          return KeyEventResult.ignored;
+        }
+        break;
+      case WhenKeyEvent.all:
+        break;
+      default:
+        return KeyEventResult.ignored;
+    }
+
     if (widget.onCancel != null) {
       final result = widget.onCancel!(node, event);
       if (result != KeyEventResult.ignored) {
@@ -196,4 +225,35 @@ class _FocusableWidgetState extends State<FocusableWidget> {
       onKeyEvent: _onKeyEvent,
     );
   }
+}
+
+KeyEventResult widgetSubmit(Widget w) {
+  while (w is Focus) {
+    w = w.child;
+  }
+  VoidCallback? submit;
+
+  /// 處理 系統提供的 常用 widget
+  if (w is ListTile) {
+    submit = w.onTap;
+  } else if (w is GestureDetector) {
+    submit = w.onTap;
+  } else if (w is InkResponse) {
+    submit = w.onTap;
+  } else if (w is ButtonStyleButton) {
+    // TextButton
+    submit = w.onPressed;
+  } else if (w is IconButton) {
+    submit = w.onPressed;
+  } else if (w is CloseButton) {
+    submit = w.onPressed;
+  } else if (w is BackButton) {
+    submit = w.onPressed;
+  } else {
+    return KeyEventResult.ignored;
+  }
+  if (submit != null) {
+    submit();
+  }
+  return KeyEventResult.handled;
 }
