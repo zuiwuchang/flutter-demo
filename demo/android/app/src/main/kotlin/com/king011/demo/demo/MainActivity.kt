@@ -1,4 +1,4 @@
-package com.king011.demo
+package com.king011.demo.demo
 
 import io.flutter.embedding.android.FlutterActivity
 

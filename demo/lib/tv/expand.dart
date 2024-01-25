@@ -33,7 +33,7 @@ class MyListTileWidget extends StatelessWidget {
   }
 }
 
-/// 創建一個自定義的 FocusableWidget 的 包裝類，倆處理 FocusableWidget 不支持的第三方組件
+/// 創建一個自定義的 FocusableWidget 的 包裝類，處理 FocusableWidget 不支持的第三方組件
 class MyFocusableWidget extends StatelessWidget {
   const MyFocusableWidget({
     super.key,
