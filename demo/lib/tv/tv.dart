@@ -19,6 +19,7 @@ class _MyTVPageState extends State<MyTVPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("TV"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: FocusableWidget(
           child: BackButton(
             onPressed: () => Navigator.maybePop(context),

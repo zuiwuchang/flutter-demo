@@ -39,6 +39,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  flutter_tts: ^3.8.5
 
 dev_dependencies:
   flutter_test:

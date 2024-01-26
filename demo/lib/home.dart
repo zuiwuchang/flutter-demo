@@ -1,6 +1,7 @@
 import 'package:demo/language/language.dart';
 import 'package:demo/language/s.dart';
 import 'package:demo/theme/theme.dart';
+import 'package:demo/tts/tts.dart';
 import 'package:demo/tv/focusable.dart';
 import 'package:demo/tv/tv.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class MyHomePage extends StatelessWidget {
           _ListLink(title: 'TV', builder: (_) => const MyTVPage()),
           _ListLink(title: 'Theme', builder: (_) => const MyThemePage()),
           _ListLink(title: 'Language', builder: (_) => const MyLanguagePage()),
+          _ListLink(title: 'TTS', builder: (_) => const MyTtsPage()),
         ],
       ),
     );
