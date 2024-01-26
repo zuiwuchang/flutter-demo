@@ -15,11 +15,6 @@ class MyTVPage extends StatefulWidget {
 
 class _MyTVPageState extends State<MyTVPage> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

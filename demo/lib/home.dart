@@ -1,24 +1,32 @@
+import 'package:demo/theme/theme.dart';
 import 'package:demo/tv/focusable.dart';
 import 'package:demo/tv/tv.dart';
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatefulWidget {
+class _ListLink extends StatelessWidget {
+  const _ListLink({
+    required this.title,
+    required this.builder,
+  });
+  final String title;
+  final WidgetBuilder builder;
+  @override
+  Widget build(BuildContext context) => FocusableWidget(
+        child: ListTile(
+          title: Text(title),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: builder,
+            ),
+          ),
+        ),
+      );
+}
+
+class MyHomePage extends StatelessWidget {
   const MyHomePage({
     super.key,
   });
-  @override
-  createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  _tv() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const MyTVPage(),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,12 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: ListView(
         children: <Widget>[
-          FocusableWidget(
-            child: ListTile(
-              title: const Text('TV'),
-              onTap: _tv,
-            ),
-          ),
+          _ListLink(title: 'TV', builder: (_) => const MyTVPage()),
+          _ListLink(title: 'Theme', builder: (_) => const MyThemePage()),
         ],
       ),
     );
