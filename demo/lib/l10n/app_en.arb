@@ -1,0 +1,14 @@
+{
+    "appTitle": "Flutter Demo",
+    "@appTitle": {
+        "description": "Title of app main"
+    },
+    "languageChoose": "Choose language",
+    "@languageChoose": {
+        "description": "Title of choose language view"
+    },
+    "languageSystem": "System",
+    "@languageSystem": {
+        "description": "Option value 'system'"
+    }
+}

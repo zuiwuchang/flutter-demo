@@ -1,3 +1,5 @@
+import 'package:demo/language/language.dart';
+import 'package:demo/language/s.dart';
 import 'package:demo/theme/theme.dart';
 import 'package:demo/tv/focusable.dart';
 import 'package:demo/tv/tv.dart';
@@ -31,13 +33,14 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flutter Demo"),
+        title: Text(S.of(context).appTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: ListView(
         children: <Widget>[
           _ListLink(title: 'TV', builder: (_) => const MyTVPage()),
           _ListLink(title: 'Theme', builder: (_) => const MyThemePage()),
+          _ListLink(title: 'Language', builder: (_) => const MyLanguagePage()),
         ],
       ),
     );

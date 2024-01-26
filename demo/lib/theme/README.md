@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 3. 在最外層的訂閱主題廣播並依據內容創建帶不同 ThmemeData 的 MaterialApp
 
   ```
-  import 'package:demo/theme/settings.dart';
+  import 'package:demo/theme/setting.dart';
   import 'package:flutter/material.dart';
   import 'package:shared_preferences/shared_preferences.dart';
   import './home.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     try {
       final db = await SharedPreferences.getInstance();
       // 加載主題設定
-      Themes.instance.load(db);
+      ThemeSetting.instance.init(db, defaultTheme);
     } catch (e) {
       debugPrint("SharedPreferences.getInstance fail: $e");
     }
@@ -55,15 +55,15 @@ class MyApp extends StatelessWidget {
     const MyApp({super.key});
     @override
     Widget build(BuildContext context) {
-      final themes = Themes.instance;
+      final themeSetting = ThemeSetting.instance;
       // 訂閱流，依據流內容創建 MaterialApp
       return StreamBuilder(
-        stream: themes.stream,
-        initialData: themes.value,
+        stream: themeSetting.stream,
+        initialData: themeSetting.value,
         builder: (context, snapshot) => MaterialApp(
           title: 'Flutter Demo',
           // 設置主題
-          theme: themes.getThemeData(context, snapshot.data),
+          theme: themeSetting.getThemeData(context, snapshot.data),
           home: const MyHomePage(),
         ),
       );
@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
   ```
 4. 提供一個頁面供用戶選擇使用的主題 theme.dart 是一個示例
 
-> settings.dart 中提供了一個單例 class Themes ，它包裝了廣播創建(rxdart) 和 數據持久化(shared_preferences) 相關的代碼
+> setting.dart 中提供了一個單例 class ThemeSetting ，它包裝了廣播創建(rxdart) 和 數據持久化(shared_preferences) 相關的代碼
 
 這個例子爲主題提供了三個選項
 

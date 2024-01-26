@@ -1,4 +1,4 @@
-import 'package:demo/theme/settings.dart';
+import 'package:demo/theme/setting.dart';
 import 'package:flutter/material.dart';
 
 class MyThemePage extends StatelessWidget {
@@ -7,15 +7,16 @@ class MyThemePage extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final themes = Themes.instance;
-    final supported = themes.supported;
+    final themeSetting = ThemeSetting.instance;
+    final supported = themeSetting.supported;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Theme"),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: StreamBuilder(
-        stream: themes.stream,
+        stream: themeSetting.stream,
+        initialData: themeSetting.value,
         builder: (context, snapshot) {
           final theme = Theme.of(context);
           return ListView.builder(
@@ -28,10 +29,8 @@ class MyThemePage extends StatelessWidget {
                   checked ? Icons.check_circle : Icons.circle_rounded,
                   color: theme.colorScheme.primary,
                 ),
-                title: Text(
-                  supported[i],
-                ),
-                onTap: () => themes.value = value,
+                title: Text(value),
+                onTap: () => themeSetting.value = value,
               );
             },
           );

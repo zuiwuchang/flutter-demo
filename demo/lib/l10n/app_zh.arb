@@ -1,0 +1,14 @@
+{
+    "appTitle": "Flutter 示例",
+    "@appTitle": {
+        "description": "this app main title"
+    },
+    "languageChoose": "選擇語言",
+    "@languageChoose": {
+        "description": "Title of choose language view"
+    },
+    "languageSystem": "系統",
+    "@languageSystem": {
+        "description": "Option value 'system'"
+    }
+}
