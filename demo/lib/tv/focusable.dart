@@ -92,53 +92,53 @@ class _FocusableWidgetState extends State<FocusableWidget> {
 
     // tv 遙控器 移動 焦點
     // 鍵盤 方向鍵
-    if (LogicalKeyboardKey.arrowLeft == event.logicalKey) {
-      return _moveArrow(focusNode, event, TraversalDirection.left);
-    } else if (LogicalKeyboardKey.arrowRight == event.logicalKey) {
-      return _moveArrow(focusNode, event, TraversalDirection.right);
-    } else if (LogicalKeyboardKey.arrowUp == event.logicalKey) {
-      return _moveArrow(focusNode, event, TraversalDirection.up);
-    } else if (LogicalKeyboardKey.arrowDown == event.logicalKey) {
-      return _moveArrow(focusNode, event, TraversalDirection.down);
+    switch (event.logicalKey) {
+      case LogicalKeyboardKey.arrowLeft:
+        return _moveArrow(focusNode, event, TraversalDirection.left);
+      case LogicalKeyboardKey.arrowRight:
+        return _moveArrow(focusNode, event, TraversalDirection.right);
+      case LogicalKeyboardKey.arrowUp:
+        return _moveArrow(focusNode, event, TraversalDirection.up);
+      case LogicalKeyboardKey.arrowDown:
+        return _moveArrow(focusNode, event, TraversalDirection.down);
+
+      case LogicalKeyboardKey.select: // tv 遙控器 select
+        return _ok(focusNode, event);
+      case LogicalKeyboardKey.cancel: // tv 遙控器 cancel
+        return _cancel(focusNode, event);
     }
-    // tv 遙控器 select
-    else if (LogicalKeyboardKey.select == event.logicalKey) {
-      return _ok(focusNode, event);
-    }
-    // tv 遙控器 cancel
-    else if (LogicalKeyboardKey.cancel == event.logicalKey) {
-      return _cancel(focusNode, event);
-    }
+
     return KeyEventResult.ignored;
   }
 
   KeyEventResult _moveArrow(
       FocusNode node, KeyEvent event, TraversalDirection direction) {
-    switch (widget.whenMove) {
-      case WhenKeyEvent.down:
-        if (event is! KeyDownEvent) {
-          return KeyEventResult.ignored;
-        }
-        break;
-      case WhenKeyEvent.up:
-        if (event is! KeyUpEvent) {
-          return KeyEventResult.ignored;
-        }
-        break;
-      case WhenKeyEvent.all:
-        break;
-      default:
-        return KeyEventResult.ignored;
-    }
-
     if (widget.onMove != null) {
+      switch (widget.whenMove) {
+        case WhenKeyEvent.down:
+          if (event is! KeyDownEvent) {
+            return KeyEventResult.ignored;
+          }
+          break;
+        case WhenKeyEvent.up:
+          if (event is! KeyUpEvent) {
+            return KeyEventResult.ignored;
+          }
+          break;
+        case WhenKeyEvent.all:
+          break;
+        default:
+          return KeyEventResult.ignored;
+      }
+
       final result = widget.onMove!(node, event, direction);
       if (result != KeyEventResult.ignored) {
         return result;
       }
     }
-    node.focusInDirection(direction);
-    return KeyEventResult.handled;
+    // node.focusInDirection(direction);
+    // return KeyEventResult.handled;
+    return KeyEventResult.ignored;
   }
 
   KeyEventResult _ok(FocusNode node, KeyEvent event) {
@@ -201,27 +201,22 @@ class _FocusableWidgetState extends State<FocusableWidget> {
   @override
   Widget build(BuildContext context) {
     /// 使用 Focus 進行包裝 以便接管鍵盤處理
+    final node = focusNode;
     return Focus(
       child: widget.child,
       onFocusChange: ((ok) {
-        if (!ok) {
-          return;
-        }
-        var node = focusNode;
-        if (!node.hasPrimaryFocus) {
-          return;
-        }
-
-        /// 如果獲取到焦點並有主焦點，將主焦點設置到第一個找到的子焦點(即 被包裝的 widget)
-        /// 因爲 flutter 提供的 widget 很多要獲取到主焦點才會額外繪製焦點效果
-        for (var child in node.children) {
-          if (child.canRequestFocus) {
-            child.requestFocus();
-            break;
+        if (ok && node.hasPrimaryFocus) {
+          /// 如果獲取到焦點並有主焦點，將主焦點設置到第一個找到的子焦點(即 被包裝的 widget)
+          /// 因爲 flutter 提供的 widget 很多要獲取到主焦點才會額外繪製焦點效果
+          for (var child in node.children) {
+            if (child.canRequestFocus) {
+              child.requestFocus();
+              break;
+            }
           }
         }
       }),
-      focusNode: focusNode,
+      focusNode: node,
       onKeyEvent: _onKeyEvent,
     );
   }

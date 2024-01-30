@@ -15,6 +15,7 @@ class _MySubmitPageState extends State<MySubmitPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("submit by $_title"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // 需要手動設置 leading，因爲默認的 BackButton 沒有適配 tv
         leading: FocusableWidget(
           child: BackButton(
