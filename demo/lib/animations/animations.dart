@@ -1,4 +1,5 @@
 import 'package:demo/animations/container_transform.dart';
+import 'package:demo/animations/shared_axis_transition.dart';
 import 'package:demo/listlink.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,10 @@ class MyAnimationsPage extends StatelessWidget {
           ListLink(
             title: 'Container transform',
             builder: (context) => const MyContainerTransformPage(),
+          ),
+          ListLink(
+            title: 'Shared axis',
+            builder: (context) => const MySharedAxisTransitionPage(),
           )
         ],
       ),
